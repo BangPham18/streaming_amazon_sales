@@ -1,18 +1,6 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import from_json, col, month, hour, dayofmonth, col, year, udf
+from pyspark.sql.functions import from_json, col, month, dayofmonth, year, to_date
 
-
-@udf
-def string_decode(s, encoding='utf-8'):
-    if s:
-        return (s.encode('latin1')         # To bytes, required by 'unicode-escape'
-                .decode('unicode-escape') # Perform the actual octal-escaping decode
-                .encode('latin1')         # 1:1 mapping back to bytes
-                .decode(encoding)         # Decode original encoding
-                .strip('\"'))
-
-    else:
-        return s
 
 def create_or_get_spark_session(app_name, master="yarn"):
     """
@@ -67,43 +55,39 @@ def create_kafka_read_stream(spark, kafka_address, kafka_port, topic, starting_o
 
 def process_stream(stream, stream_schema, topic):
     """
-    Process stream to fetch on value from the kafka message.
-    convert ts to timestamp format and produce year, month, day,
-    hour columns
+    Process stream to fetch value from the kafka message.
+    Parse the Date field and produce year, month, day columns for partitioning.
+    
     Parameters:
         stream : DataStreamReader
             The data stream reader for your stream
+        stream_schema : StructType
+            The schema for parsing the JSON data
+        topic : str
+            The Kafka topic name
     Returns:
         stream: DataStreamReader
     """
 
-    # read only value from the incoming message and convert the contents
+    # Read only value from the incoming message and convert the contents
     # inside to the passed schema
     stream = (stream
               .selectExpr("CAST(value AS STRING)")
               .select(
-                  from_json(col("value"), stream_schema).alias(
-                      "data")
+                  from_json(col("value"), stream_schema).alias("data")
               )
               .select("data.*")
               )
 
-    # Add month, day, hour to split the data into separate directories
+    # For Amazon Sales data: parse Date field and add year, month, day for partitioning
+    # The Date field format is: YYYY-MM-DD (from kafka_producer)
     stream = (stream
-              .withColumn("ts", (col("ts")/1000).cast("timestamp"))
-              .withColumn("year", year(col("ts")))
-              .withColumn("month", month(col("ts")))
-              .withColumn("hour", hour(col("ts")))
-              .withColumn("day", dayofmonth(col("ts")))
+              .withColumn("order_date", to_date(col("Date"), "yyyy-MM-dd"))
+              .withColumn("year", year(col("order_date")))
+              .withColumn("month", month(col("order_date")))
+              .withColumn("day", dayofmonth(col("order_date")))
+              .drop("order_date")  # Drop temporary column
               )
-
-    # rectify string encoding
-    if topic in ["listen_events", "page_view_events"]:
-        stream = (stream
-                .withColumn("song", string_decode("song"))
-                .withColumn("artist", string_decode("artist")) 
-                )
-
 
     return stream
 
@@ -130,7 +114,7 @@ def create_file_write_stream(stream, storage_path, checkpoint_path, trigger="120
     write_stream = (stream
                     .writeStream
                     .format(file_format)
-                    .partitionBy("month", "day", "hour")
+                    .partitionBy("year", "month", "day")
                     .option("path", storage_path)
                     .option("checkpointLocation", checkpoint_path)
                     .trigger(processingTime=trigger)
