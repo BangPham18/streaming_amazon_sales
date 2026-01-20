@@ -11,57 +11,32 @@ from schema import schema
 # Load environment variables from .env file
 load_dotenv()
 
-# Kafka Topics
-LISTEN_EVENTS_TOPIC = "listen_events"
-PAGE_VIEW_EVENTS_TOPIC = "page_view_events"
-AUTH_EVENTS_TOPIC = "auth_events"
+# Kafka Topic for Amazon Sales
+AMAZON_SALES_TOPIC = "amazon_sales"
 
 KAFKA_PORT = "9092"
 
 KAFKA_ADDRESS = os.getenv("KAFKA_ADDRESS", 'localhost')
-GCP_GCS_BUCKET = os.getenv("GCP_GCS_BUCKET", 'streamify')
+GCP_GCS_BUCKET = os.getenv("GCP_GCS_BUCKET", 'streaming_amazon_sales')
 GCS_STORAGE_PATH = f'gs://{GCP_GCS_BUCKET}'
 
-# initialize a spark session
-spark = create_or_get_spark_session('Eventsim Stream')
+# Initialize a spark session
+spark = create_or_get_spark_session('Amazon Sales Stream')
 spark.streams.resetTerminated()
-# listen events stream
-listen_events = create_kafka_read_stream(
-    spark, KAFKA_ADDRESS, KAFKA_PORT, LISTEN_EVENTS_TOPIC)
-listen_events = process_stream(
-    listen_events, schema[LISTEN_EVENTS_TOPIC], LISTEN_EVENTS_TOPIC)
 
-# page view stream
-page_view_events = create_kafka_read_stream(
-    spark, KAFKA_ADDRESS, KAFKA_PORT, PAGE_VIEW_EVENTS_TOPIC)
-page_view_events = process_stream(
-    page_view_events, schema[PAGE_VIEW_EVENTS_TOPIC], PAGE_VIEW_EVENTS_TOPIC)
+# Amazon sales stream
+amazon_sales = create_kafka_read_stream(
+    spark, KAFKA_ADDRESS, KAFKA_PORT, AMAZON_SALES_TOPIC)
+amazon_sales = process_stream(
+    amazon_sales, schema[AMAZON_SALES_TOPIC], AMAZON_SALES_TOPIC)
 
-# auth stream
-auth_events = create_kafka_read_stream(
-    spark, KAFKA_ADDRESS, KAFKA_PORT, AUTH_EVENTS_TOPIC)
-auth_events = process_stream(
-    auth_events, schema[AUTH_EVENTS_TOPIC], AUTH_EVENTS_TOPIC)
+# Write to storage every 2 minutes in parquet format
+amazon_sales_writer = create_file_write_stream(
+    amazon_sales,
+    f"{GCS_STORAGE_PATH}/{AMAZON_SALES_TOPIC}",
+    f"{GCS_STORAGE_PATH}/checkpoint/{AMAZON_SALES_TOPIC}"
+)
 
-# write a file to storage every 2 minutes in parquet format
-listen_events_writer = create_file_write_stream(listen_events,
-                                                f"{GCS_STORAGE_PATH}/{LISTEN_EVENTS_TOPIC}",
-                                                f"{GCS_STORAGE_PATH}/checkpoint/{LISTEN_EVENTS_TOPIC}"
-                                                )
-
-page_view_events_writer = create_file_write_stream(page_view_events,
-                                                   f"{GCS_STORAGE_PATH}/{PAGE_VIEW_EVENTS_TOPIC}",
-                                                   f"{GCS_STORAGE_PATH}/checkpoint/{PAGE_VIEW_EVENTS_TOPIC}"
-                                                   )
-
-auth_events_writer = create_file_write_stream(auth_events,
-                                              f"{GCS_STORAGE_PATH}/{AUTH_EVENTS_TOPIC}",
-                                              f"{GCS_STORAGE_PATH}/checkpoint/{AUTH_EVENTS_TOPIC}"
-                                              )
-
-
-listen_events_writer.start()
-auth_events_writer.start()
-page_view_events_writer.start()
+amazon_sales_writer.start()
 
 spark.streams.awaitAnyTermination()
