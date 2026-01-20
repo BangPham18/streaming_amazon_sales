@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  # 1. SDV Producer (App của chúng ta)
+  sdv-producer:
+    build: .
+    env_file:
+      - .env
+    volumes:
+      # Mount volume để sau khi train xong, file model không bị mất khi tắt container
+      - ./model_storage:/app/models/

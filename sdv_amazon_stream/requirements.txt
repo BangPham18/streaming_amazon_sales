@@ -1,0 +1,3 @@
+pandas
+sdv
+kafka-python
