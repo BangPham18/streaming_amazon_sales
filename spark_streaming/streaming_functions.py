@@ -80,9 +80,9 @@ def process_stream(stream, stream_schema, topic):
               )
 
     # For Amazon Sales data: parse Date field and add year, month, day for partitioning
-    # The Date field format is: YYYY-MM-DD (from kafka_producer)
+    # The date field format is: YYYY-MM-DD (from kafka_producer)
     stream = (stream
-              .withColumn("order_date", to_date(col("Date"), "yyyy-MM-dd"))
+              .withColumn("order_date", to_date(col("date"), "yyyy-MM-dd"))
               .withColumn("year", year(col("order_date")))
               .withColumn("month", month(col("order_date")))
               .withColumn("day", dayofmonth(col("order_date")))
