@@ -5,17 +5,17 @@
 
 
 SELECT 
-    {{ dbt_utils.generate_surrogate_key(['SKU', 'ASIN']) }} as product_key,
+    {{ dbt_utils.generate_surrogate_key(['sku', 'asin']) }} as product_key,
     *
 FROM (
     SELECT DISTINCT
-        SKU as sku,
-        ASIN as asin,
-        Style as style,
-        Category as category,
-        Size as size
+        sku,
+        asin,
+        style,
+        category,
+        size
     FROM {{ source('staging', 'amazon_sales_external') }}
-    WHERE SKU IS NOT NULL OR ASIN IS NOT NULL
+    WHERE sku IS NOT NULL OR asin IS NOT NULL
 
     UNION ALL
 

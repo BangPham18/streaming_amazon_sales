@@ -9,10 +9,10 @@ SELECT
     *
 FROM (
     SELECT DISTINCT
-        Fulfilment as fulfilment,
-        `ship-service-level` as ship_service_level,
-        `Courier Status` as courier_status,
-        Status as status
+        fulfilment,
+        ship_service_level,
+        courier_status,
+        status
     FROM {{ source('staging', 'amazon_sales_external') }}
 
     UNION ALL

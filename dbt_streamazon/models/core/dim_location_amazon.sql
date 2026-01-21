@@ -9,12 +9,12 @@ SELECT
     *
 FROM (
     SELECT DISTINCT
-        CAST(`ship-postal-code` AS STRING) as ship_postal_code,
-        `ship-city` as ship_city,
-        `ship-state` as ship_state,
-        `ship-country` as ship_country
+        CAST(ship_postal_code AS STRING) as ship_postal_code,
+        ship_city,
+        ship_state,
+        ship_country
     FROM {{ source('staging', 'amazon_sales_external') }}
-    WHERE `ship-city` IS NOT NULL
+    WHERE ship_city IS NOT NULL
 
     UNION ALL
 

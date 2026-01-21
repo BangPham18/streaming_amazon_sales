@@ -3,7 +3,7 @@ dbt_streamazon:
     dev:
       dataset: streamazon_stg
       fixed_retries: 1
-      location: us-central1
+      location: us-east1
       method: oauth
       priority: interactive
       project: "streaming-amazon-sales"
@@ -13,7 +13,7 @@ dbt_streamazon:
     prod:
       dataset: streamazon_prod
       fixed_retries: 1
-      location: us-central1
+      location: us-east1
       method: oauth
       priority: interactive
       project: "streaming-amazon-sales"

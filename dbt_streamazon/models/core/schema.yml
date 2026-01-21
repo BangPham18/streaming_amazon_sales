@@ -3,7 +3,7 @@ version: 2
 sources:
     - name: staging
       database: "{{ env_var('GCP_PROJECT_ID') }}"
-      schema: streamazon_stg
+      schema: streamazon_prod
       tables:
         - name: amazon_sales_external
           description: "Raw Amazon sales data loaded from external source"

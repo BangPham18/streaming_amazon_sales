@@ -9,7 +9,7 @@ SELECT
     *
 FROM (
     SELECT DISTINCT
-        COALESCE(`promotion-ids`, 'No Promotion') as promotion_ids
+        COALESCE(promotion_ids, 'No Promotion') as promotion_ids
     FROM {{ source('staging', 'amazon_sales_external') }}
 
     UNION ALL
