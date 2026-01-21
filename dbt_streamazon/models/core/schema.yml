@@ -1,0 +1,86 @@
+version: 2
+
+sources:
+    - name: staging
+      database: "{{ env_var('GCP_PROJECT_ID') }}"
+      schema: streamazon_stg
+      tables:
+        - name: amazon_sales_external
+          description: "Raw Amazon sales data loaded from external source"
+
+models:
+  - name: dim_product
+    description: "Dimension table containing product information (SKU, ASIN, Style, Category, Size)"
+    columns:
+      - name: product_key
+        description: "Surrogate key for product dimension"
+      - name: sku
+        description: "Stock Keeping Unit - mã kho hàng"
+      - name: asin
+        description: "Amazon Standard Identification Number"
+      - name: style
+        description: "Product style"
+      - name: category
+        description: "Product category (Set, kurta, Top...)"
+      - name: size
+        description: "Product size (S, M, L, XL...)"
+
+  - name: dim_location_amazon
+    description: "Dimension table containing shipping location information"
+    columns:
+      - name: location_key
+        description: "Surrogate key for location dimension"
+      - name: ship_postal_code
+        description: "Shipping postal code"
+      - name: ship_city
+        description: "Shipping city"
+      - name: ship_state
+        description: "Shipping state/province"
+      - name: ship_country
+        description: "Shipping country"
+
+  - name: dim_order_details
+    description: "Dimension table containing order processing information"
+    columns:
+      - name: order_details_key
+        description: "Surrogate key for order details dimension"
+      - name: fulfilment
+        description: "Fulfillment method (Amazon/Merchant)"
+      - name: ship_service_level
+        description: "Shipping service level (Standard/Expedited)"
+      - name: courier_status
+        description: "Courier status details"
+      - name: status
+        description: "Order status"
+
+  - name: dim_promotion
+    description: "Dimension table containing promotion information"
+    columns:
+      - name: promotion_key
+        description: "Surrogate key for promotion dimension"
+      - name: promotion_ids
+        description: "Promotion IDs applied to the order"
+
+  - name: fact_amazon_sales
+    description: "Fact table containing sales transactions with foreign keys to dimension tables"
+    columns:
+      - name: order_id
+        description: "Amazon order ID"
+      - name: order_date
+        description: "Order date"
+      - name: product_key
+        description: "Foreign key to dim_product"
+      - name: location_key
+        description: "Foreign key to dim_location_amazon"
+      - name: order_details_key
+        description: "Foreign key to dim_order_details"
+      - name: promotion_key
+        description: "Foreign key to dim_promotion"
+      - name: qty
+        description: "Quantity ordered"
+      - name: amount
+        description: "Order amount (revenue)"
+      - name: currency
+        description: "Currency code"
+      - name: b2b
+        description: "B2B flag"
