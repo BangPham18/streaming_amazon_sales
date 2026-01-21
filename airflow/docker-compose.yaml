@@ -68,7 +68,7 @@ x-airflow-common:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
     - ./plugins:/opt/airflow/plugins
-    - ../dbt:/dbt
+    - ../dbt_streamazon:/dbt
     - ${GOOGLE_CREDENTIALS_PATH:-~/.config/gcloud}:/opt/airflow/gcloud:ro
     - ~/.dbt:/home/airflow/.dbt:ro
   user: "${AIRFLOW_UID:-50000}:0"
