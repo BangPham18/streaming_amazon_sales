@@ -43,24 +43,7 @@ SDV (Synthetic Data Vault) is used to generate realistic synthetic data for stre
 
 ### Architecture
 
-```
-┌──────────────────┐     ┌─────────────┐     ┌──────────────────┐
-│  SDV Amazon      │────▶│   Kafka     │────▶│  Spark Streaming │
-│  Data Generator  │     │   Broker    │     │                  │
-└──────────────────┘     └─────────────┘     └────────┬─────────┘
-                                                      │
-                                                      ▼
-┌──────────────────┐     ┌─────────────┐     ┌──────────────────┐
-│   Looker Studio  │◀────│  BigQuery   │◀────│  Google Cloud    │
-│   (Dashboard)    │     │  (dbt)      │     │  Storage         │
-└──────────────────┘     └─────────────┘     └──────────────────┘
-                                ▲
-                                │
-                         ┌──────┴──────┐
-                         │   Airflow   │
-                         │(Orchestration)│
-                         └─────────────┘
-```
+![Streamazon Architecture](images/architecture.png)
 
 ### Data Model
 
