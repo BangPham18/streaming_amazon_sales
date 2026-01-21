@@ -1,0 +1,11 @@
+apache-airflow-providers-google
+# Cài bản pyarrow mới có hỗ trợ Python 3.12 (có sẵn file wheel, không cần build)
+pyarrow>=14.0.0
+# Cài pandas mới
+pandas>=2.1.0
+sqlalchemy
+psycopg2-binary
+# Sửa lỗi YAML
+PyYAML>=6.0.1
+# QUAN TRỌNG: Nâng cấp dbt lên bản hỗ trợ Python 3.12
+dbt-bigquery>=1.7.0

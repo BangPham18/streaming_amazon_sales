@@ -1,10 +1,10 @@
 #!/bin/bash
 
 echo "Changing permissions for dbt folder..."
-cd ~/streamify/ && sudo chmod -R 777 dbt
+cd ~/streaming_amazon_sales/ && sudo chmod -R 777 dbt_streamazon
 
 echo "Building airflow docker images..."
-cd ~/streamify/airflow
+cd ~/streaming_amazon_sales/airflow
 docker-compose build
 
 echo "Running airflow-init..."
@@ -14,5 +14,5 @@ echo "Starting up airflow in detached mode..."
 docker-compose up -d
 
 echo "Airflow started successfully."
-echo "Airflow is running in detached mode. "
+echo "Airflow is running in detached mode."
 echo "Run 'docker-compose logs --follow' to see the logs."

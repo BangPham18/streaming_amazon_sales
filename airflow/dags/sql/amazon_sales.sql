@@ -1,0 +1,53 @@
+-- SQL insert query for amazon_sales data
+-- This query inserts data from external table to the staging table
+
+INSERT INTO {{ BIGQUERY_DATASET }}.amazon_sales (
+    index,
+    order_id,
+    date,
+    status,
+    fulfilment,
+    sales_channel,
+    ship_service_level,
+    style,
+    sku,
+    category,
+    size,
+    asin,
+    courier_status,
+    qty,
+    currency,
+    amount,
+    ship_city,
+    ship_state,
+    ship_postal_code,
+    ship_country,
+    promotion_ids,
+    b2b,
+    fulfilled_by
+)
+SELECT 
+    index,
+    order_id,
+    date,
+    status,
+    fulfilment,
+    sales_channel,
+    ship_service_level,
+    style,
+    sku,
+    category,
+    size,
+    asin,
+    courier_status,
+    qty,
+    currency,
+    amount,
+    ship_city,
+    ship_state,
+    ship_postal_code,
+    ship_country,
+    promotion_ids,
+    b2b,
+    fulfilled_by
+FROM {{ BIGQUERY_DATASET }}.{{ AMAZON_SALES_TABLE }}_{{ EXECUTION_DATETIME_STR }};
