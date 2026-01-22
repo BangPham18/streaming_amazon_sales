@@ -5,7 +5,7 @@
 
 
 SELECT 
-    {{ dbt_utils.generate_surrogate_key(['sku', 'asin']) }} as product_key,
+    {{ dbt_utils.generate_surrogate_key(['sku', 'asin', 'style', 'category', 'size']) }} as product_key,
     *
 FROM (
     SELECT DISTINCT

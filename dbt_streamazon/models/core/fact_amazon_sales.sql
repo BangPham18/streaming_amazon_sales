@@ -27,6 +27,9 @@ FROM {{ source('staging', 'amazon_sales_external') }} as sales
 LEFT JOIN {{ ref('dim_product') }} as dim_product
     ON sales.sku = dim_product.sku 
     AND sales.asin = dim_product.asin
+    AND sales.style = dim_product.style
+    AND sales.category = dim_product.category
+    AND sales.size = dim_product.size
 
 LEFT JOIN {{ ref('dim_location_amazon') }} as dim_location
     ON CAST(sales.ship_postal_code AS STRING) = dim_location.ship_postal_code
