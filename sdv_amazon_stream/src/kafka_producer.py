@@ -76,22 +76,40 @@ def main():
     synthesizer = GaussianCopulaSynthesizer.load(MODEL_PATH)
 
     print(f"Bắt đầu gửi dữ liệu vào topic '{KAFKA_TOPIC}'...")
+    
+    # Callback để xử lý lỗi gửi
+    def on_send_error(excp):
+        print(f"Lỗi gửi tin nhắn: {excp}")
+    
+    total_sent = 0
     try:
         while True:
+            # Sample 1000 records mỗi batch
             synthetic_data = synthesizer.sample(num_rows=1000)
-            record = synthetic_data.to_dict(orient='records')[0]
+            records = synthetic_data.to_dict(orient='records')
             
-            # Chuẩn hóa tên cột và xử lý Timestamp
-            record = normalize_record(record)
-            
-            # Thêm timestamp ingestion
-            record['ingestion_timestamp'] = time.time()
+            # Gửi từng record trong batch
+            for record in records:
+                # Chuẩn hóa tên cột và xử lý Timestamp
+                record = normalize_record(record)
+                
+                # Thêm timestamp ingestion
+                record['ingestion_timestamp'] = time.time()
 
-            producer.send(KAFKA_TOPIC, value=record)
-            print(f"Đã gửi đơn hàng ID: {record.get('order_id', 'N/A')}")
-            time.sleep(random.uniform(0.5, 2))  # Giả lập độ trễ
+                # Gửi với callback xử lý lỗi
+                future = producer.send(KAFKA_TOPIC, value=record)
+                future.add_errback(on_send_error)
+            
+            # Flush sau khi gửi hết batch để đảm bảo tin nhắn được gửi đi
+            producer.flush()
+            total_sent += 1000
+            print(f"[Batch hoàn thành] Tổng: {total_sent} records đã gửi")
+            
+            # Nghỉ 1 giây giữa các batch để tránh quá tải
+            time.sleep(1)
             
     except KeyboardInterrupt:
+        producer.flush()  # Flush trước khi đóng
         producer.close()
 
 if __name__ == "__main__":

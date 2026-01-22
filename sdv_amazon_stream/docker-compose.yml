@@ -9,3 +9,8 @@ services:
     volumes:
       # Mount volume để sau khi train xong, file model không bị mất khi tắt container
       - ./model_storage:/app/models/
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"   # Giới hạn 10MB mỗi file log
+        max-file: "3"     # Chỉ giữ tối đa 3 file log

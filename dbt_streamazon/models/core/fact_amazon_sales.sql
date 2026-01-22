@@ -11,7 +11,7 @@
 -- Chứa các foreign keys trỏ đến các bảng dimension và các metrics
 
 
-SELECT 
+SELECT DISTINCT
     sales.order_id,
     PARSE_DATE('%Y-%m-%d', sales.date) as order_date,
     dim_product.product_key as product_key,
