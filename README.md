@@ -45,6 +45,10 @@ SDV (Synthetic Data Vault) is used to generate realistic synthetic data for stre
 
 ![Streamazon Architecture](images/architecture.png)
 
+### Final Result
+
+![Amazon Sales Dashboard](images/dashboard.png)
+
 ### Data Model
 
 **Dimension Tables:**
