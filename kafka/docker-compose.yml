@@ -38,6 +38,11 @@ services:
       CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
       CONFLUENT_METRICS_ENABLE: "true"
       CONFLUENT_SUPPORT_CUSTOMER_ID: "anonymous"
+      # Kafka message data retention settings
+      KAFKA_LOG_RETENTION_MS: 3600000              # Giữ messages tối đa 1 giờ
+      KAFKA_LOG_RETENTION_BYTES: 524288000         # Giới hạn 500MB mỗi partition
+      KAFKA_LOG_SEGMENT_BYTES: 104857600           # 100MB mỗi segment
+      KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 300000  # Kiểm tra mỗi 5 phút
     logging:
       driver: "json-file"
       options:
