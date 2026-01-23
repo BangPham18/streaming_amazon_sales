@@ -13,8 +13,8 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"
-        max-file: "3"
+        max-size: "2m"
+        max-file: "2"
 
   broker:
     image: confluentinc/cp-server:5.4.0
@@ -41,8 +41,8 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "50m"
-        max-file: "3"
+        max-size: "5m"
+        max-file: "2"
 
   kafka-tools:
     image: confluentinc/cp-kafka:5.4.0
@@ -52,8 +52,8 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"
-        max-file: "3"
+        max-size: "2m"
+        max-file: "2"
     network_mode: "host"
 
   schema-registry:
@@ -71,8 +71,8 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"
-        max-file: "3"
+        max-size: "2m"
+        max-file: "2"
 
   control-center:
     image: confluentinc/cp-enterprise-control-center:5.4.0
@@ -96,5 +96,5 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "50m"
-        max-file: "3"
+        max-size: "5m"
+        max-file: "2"

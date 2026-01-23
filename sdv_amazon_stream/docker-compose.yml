@@ -12,5 +12,5 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"   # Giới hạn 10MB mỗi file log
-        max-file: "3"     # Chỉ giữ tối đa 3 file log
+        max-size: "2m"   # Giới hạn 2MB (~2 giờ logs)
+        max-file: "2"     # Chỉ giữ tối đa 2 file log

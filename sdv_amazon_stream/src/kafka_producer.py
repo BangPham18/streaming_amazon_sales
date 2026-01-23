@@ -77,11 +77,24 @@ def main():
 
     print(f"Bắt đầu gửi dữ liệu vào topic '{KAFKA_TOPIC}'...")
     
-    # Callback để xử lý lỗi gửi
+    # Callback để xử lý lỗi gửi - giới hạn log để tránh spam
+    error_count = 0
+    last_error_log_time = 0
+    
     def on_send_error(excp):
-        print(f"Lỗi gửi tin nhắn: {excp}")
+        nonlocal error_count, last_error_log_time
+        error_count += 1
+        current_time = time.time()
+        # Chỉ log lỗi mỗi 60 giây để tránh spam log
+        if current_time - last_error_log_time > 60:
+            print(f"[CẢNH BÁO] {error_count} lỗi gửi tin nhắn. Lỗi gần nhất: {excp}")
+            error_count = 0
+            last_error_log_time = current_time
     
     total_sent = 0
+    batch_count = 0
+    start_time = time.time()
+    
     try:
         while True:
             # Sample 1000 records mỗi batch
@@ -103,7 +116,12 @@ def main():
             # Flush sau khi gửi hết batch để đảm bảo tin nhắn được gửi đi
             producer.flush()
             total_sent += 1000
-            print(f"[Batch hoàn thành] Tổng: {total_sent} records đã gửi")
+            batch_count += 1
+            
+            # Chỉ log mỗi 100 batch (100,000 records) để giảm log
+            if batch_count % 100 == 0:
+                elapsed = time.time() - start_time
+                print(f"[Tiến độ] {total_sent:,} records | {elapsed/3600:.1f} giờ | {total_sent/elapsed:.0f} records/s")
             
             # Nghỉ 1 giây giữa các batch để tránh quá tải
             time.sleep(1)
