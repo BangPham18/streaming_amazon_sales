@@ -50,6 +50,11 @@ def normalize_record(record):
         # Áp dụng mapping tên cột
         new_key = COLUMN_MAPPING.get(key, key.lower().replace(' ', '_').replace('-', '_'))
         normalized[new_key] = value
+    
+    # Đảm bảo ship_postal_code là string để khớp với Spark schema
+    if 'ship_postal_code' in normalized and normalized['ship_postal_code'] is not None:
+        normalized['ship_postal_code'] = str(int(normalized['ship_postal_code']))
+    
     return normalized
 
 def main():
